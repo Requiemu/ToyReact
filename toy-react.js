@@ -47,7 +47,8 @@ export class Component {
     }
 
     rerender() {
-
+        this._range.deleteContents();
+        this.render()[RENDER_TO_DOM](this._range);
     }
 
     setState(newState) {
