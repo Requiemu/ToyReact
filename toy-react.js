@@ -119,7 +119,6 @@ export function createElement(type, attributes, ...children) {
             e.appendChild(child);
         }
     }
-    console.log(e, children)
     insertChild(children);
     return e;
 }
