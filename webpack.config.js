@@ -20,7 +20,14 @@ module.exports = {
                         plugins: [['@babel/plugin-transform-react-jsx', { pragma: 'createElement' }]]
                     }
                 }
-            }
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                ],
+            },
         ]
     },
     devServer: {
