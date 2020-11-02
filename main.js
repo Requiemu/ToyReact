@@ -17,7 +17,7 @@ class MyComponent extends Component {
         return <div>
             <h1>My component</h1>
             <div>{this.state.a.toString()}</div>
-            <button onClick={() =>{this.setState({a: this.state.a+1}); console.log(this.state.a)}}>加</button>
+            <button onClick={() =>{this.setState({a: this.state.a+1})}}>加</button>
             {this.children}
         </div>
     }

@@ -16,7 +16,6 @@ export class ElementWrapper {
     }
 
     appendChild(component) {
-        // this.root.appendChild(component.root);
         let range = document.createRange();
         range.setStart(this.root, this.root.childNodes.length);
         range.setEnd(this.root, this.root.childNodes.length);
@@ -123,6 +122,6 @@ export function createElement(type, attributes, ...children) {
 
 export function render(component, parentElement) {
     let rootRange = document.createRange();
-    rootRange.selectNode(parentElement);
+    rootRange.selectNodeContents(parentElement);
     component[RENDER_TO_DOM](rootRange);
 }

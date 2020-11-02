@@ -1,3 +1,5 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 module.exports = {
     entry: {
         main: './main.js'
@@ -15,7 +17,7 @@ module.exports = {
                     loader: 'babel-loader',
                     options: {
                         presets: ['@babel/preset-env'],
-                        plugins: [['@babel/plugin-transform-react-jsx', {pragma: 'createElement'}]]
+                        plugins: [['@babel/plugin-transform-react-jsx', { pragma: 'createElement' }]]
                     }
                 }
             }
@@ -25,5 +27,8 @@ module.exports = {
         contentBase: './dist',
         port: 9123,
         open: true
-      },
+    },
+    plugins: [new HtmlWebpackPlugin({
+        template: './index.html'
+    })]
 }
