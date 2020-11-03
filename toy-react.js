@@ -17,14 +17,7 @@ export class Component {
         // return this.render().vdom;
     }
 
-    update(range) {
-        // this._range.deleteContents();
-        // this[RENDER_TO_DOM](this._range);
-        console.log('update: ', this, range)
-        if (range) {
-            this._range = range;
-        }
-
+    update() {
         const isSameVDom = (oldVDom, newVDom) => {
             if (!oldVDom) {
                 return false;
@@ -48,7 +41,6 @@ export class Component {
 
         const update = (oldVDom, newVDom) => {
             console.log('update, oldvdom, newVdom', oldVDom, newVDom)
-            newVDom._range = oldVDom._range;
             if (!isSameVDom(oldVDom, newVDom)) {
                 newVDom[RENDER_TO_DOM](oldVDom._range);
                 return;
@@ -89,6 +81,7 @@ export class Component {
 
         let vdom = this.vdom;
         update(this._vdom, vdom);
+        // this._vdom = vdom;
     }
 
     setState(newState) {
@@ -169,9 +162,19 @@ export class ElementWrapper extends Component {
         }
 
         this._root = root;
-        range.deleteContents();
-        range.insertNode(root);
+        // range.deleteContents();
+        // range.insertNode(root);
+        replaceContent(range, root);
     }
+}
+
+function replaceContent(range, node) {
+    range.insertNode(node);
+    range.setStartAfter(node);
+    range.deleteContents();
+
+    range.setStartBefore(node);
+    range.setEndAfter(node);
 }
 
 export class TextWrapper extends Component {
