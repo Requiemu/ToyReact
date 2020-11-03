@@ -1,45 +1,5 @@
 const RENDER_TO_DOM = Symbol("render to dom");
 
-export class ElementWrapper {
-    constructor(type) {
-        this.root = document.createElement(type);
-    }
-
-    setAttribute(name, value) {
-        if (name.match(/^on([\s\S]+)$/)) {
-            this.root.addEventListener(RegExp.$1.replace(/^[\s\S]/, (s)=>s.toLowerCase()), value);
-        } else if (name === 'className'){
-            this.root.setAttribute('class', value);
-        } else {
-            this.root.setAttribute(name, value);
-        }
-    }
-
-    appendChild(component) {
-        let range = document.createRange();
-        range.setStart(this.root, this.root.childNodes.length);
-        range.setEnd(this.root, this.root.childNodes.length);
-        component[RENDER_TO_DOM](range);
-    }
-
-    [RENDER_TO_DOM](range){
-        range.deleteContents();
-        range.insertNode(this.root);
-    }
-}
-
-export class TextWrapper {
-
-    constructor(content) {
-        this.root = document.createTextNode(content);
-    }
-
-    [RENDER_TO_DOM](range) {
-        range.deleteContents();
-        range.insertNode(this.root);
-    }
-}
-
 export class Component {
     constructor() {
         this.props = Object.create(null);
@@ -48,20 +8,27 @@ export class Component {
         this._range = null;
     }
 
-    rerender() {
+    get vdom() {
+        return this.render().vdom;
+    }
+
+    update(range) {
+        if (range) {
+            this._range = range;
+        }
         this._range.deleteContents();
-        this.render()[RENDER_TO_DOM](this._range);
+        this[RENDER_TO_DOM](this._range);
     }
 
     setState(newState) {
         if (this.state === null) {
             this.state = newState;
-        } else if (typeof this.state !== 'object'){
+        } else if (typeof this.state !== 'object') {
             this.state = newState;
         } else if (typeof this.state === 'object') {
             const merge = (oldValue, newValue) => {
                 for (let p in newValue) {
-                    if (oldValue[p] === null || typeof oldValue[p] !== 'object' ) {
+                    if (oldValue[p] === null || typeof oldValue[p] !== 'object') {
                         oldValue[p] = newValue[p];
                     } else {
                         merge(oldValue[p], newValue[p]);
@@ -70,7 +37,7 @@ export class Component {
             }
             merge(this.state, newState);
         }
-        this.rerender();
+        this.update();
     }
 
     setAttribute(name, value) {
@@ -83,13 +50,69 @@ export class Component {
 
     [RENDER_TO_DOM](range) {
         this._range = range;
-        this.render()[RENDER_TO_DOM](range);
+        this.render().update(range);
     }
 
 
 
     render() {
 
+    }
+}
+
+export class ElementWrapper extends Component {
+    constructor(type) {
+        super();
+        this.type = type;
+    }
+
+    get vdom() {
+        return this;
+    }
+
+    [RENDER_TO_DOM](range) {
+        const root = document.createElement(this.type);
+
+        for (let name in this.props) {
+            const value = this.props[name]
+            if (name.match(/^on([\s\S]+)$/)) {
+                root.addEventListener(RegExp.$1.replace(/^[\s\S]/, (s) => s.toLowerCase()), value);
+            } else if (name === 'className') {
+                root.setAttribute('class', value);
+            } else {
+                root.setAttribute(name, value);
+            }
+        }
+
+        for (let component of this.children) {
+            let range = document.createRange();
+            range.setStart(root, root.childNodes.length);
+            range.setEnd(root, root.childNodes.length);
+            // component[RENDER_TO_DOM](range);
+            component.update(range);
+        }
+
+
+        range.deleteContents();
+        range.insertNode(root);
+    }
+}
+
+export class TextWrapper extends Component {
+
+    constructor(content) {
+        super();
+        this.content = content;
+    }
+
+    get vdom() {
+        return this;
+    }
+
+    [RENDER_TO_DOM](range) {
+        const root = document.createTextNode(this.content);
+        range.deleteContents();
+        range.insertNode(root);
     }
 }
 
