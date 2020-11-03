@@ -27,6 +27,7 @@ class Square extends Component{
     }
   
     handleClick(i) {
+      console.log(this)
       const squares = this.state.squares.slice();
       if (calculateWinner(squares) || squares[i]) {
         return;
@@ -94,7 +95,7 @@ class Square extends Component{
       );
     }
   }
-  
+
   // ========================================
   
   render(
