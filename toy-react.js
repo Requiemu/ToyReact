@@ -9,7 +9,12 @@ export class Component {
     }
 
     get vdom() {
+        if (!this._vdom) {
+            this._vdom = this.render().vdom;
+            return this._vdom;
+        }
         return this.render().vdom;
+        // return this.render().vdom;
     }
 
     update(range) {
@@ -42,6 +47,7 @@ export class Component {
         }
 
         const update = (oldVDom, newVDom) => {
+            console.log('update, oldvdom, newVdom', oldVDom, newVDom)
             newVDom._range = oldVDom._range;
             if (!isSameVDom(oldVDom, newVDom)) {
                 newVDom[RENDER_TO_DOM](oldVDom._range);
@@ -101,11 +107,15 @@ export class Component {
                 }
             }
             merge(this.state, newState);
+            this.update();
         }
-        this.update(this._range);
+        
     }
 
     setAttribute(name, value) {
+        if (value === 'square') {
+            console.log(this)
+        }
         this.props[name] = value;
     }
 
@@ -134,7 +144,6 @@ export class ElementWrapper extends Component {
 
     [RENDER_TO_DOM](range) {
         this._range = range;
-        console.log('vdom render to dom:', this.props.className, !!this._range)
         const root = document.createElement(this.type);
 
         for (let name in this.props) {
@@ -149,7 +158,7 @@ export class ElementWrapper extends Component {
         }
 
         if (!this.vchildren) {
-            this.vchildren = this.children.map(child => child.vdom);
+            this.vchildren = this.children.map(child => child._vdom);
         }
 
         for (let component of this.vchildren) {
@@ -159,6 +168,7 @@ export class ElementWrapper extends Component {
             component[RENDER_TO_DOM](childRange);
         }
 
+        this._root = root;
         range.deleteContents();
         range.insertNode(root);
     }
@@ -217,7 +227,6 @@ export function createElement(type, attributes, ...children) {
 export function render(component, parentElement) {
     let rootRange = document.createRange();
     rootRange.selectNodeContents(parentElement);
-    console.log(component)
     component[RENDER_TO_DOM](rootRange);
-    console.log(component)
+    console.log(component);
 }
