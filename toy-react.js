@@ -14,7 +14,6 @@ export class Component {
             return this._vdom;
         }
         return this.render().vdom;
-        // return this.render().vdom;
     }
 
     update() {
@@ -73,15 +72,9 @@ export class Component {
 
         }
 
-        // if (!this._vdom) {
-        //     // this._range = range;
-        //     this[RENDER_TO_DOM](range);
-        //     return;
-        // }
-
         let vdom = this.vdom;
         update(this._vdom, vdom);
-        // this._vdom = vdom;
+        this._vdom = vdom;
     }
 
     setState(newState) {
@@ -102,7 +95,7 @@ export class Component {
             merge(this.state, newState);
             this.update();
         }
-        
+
     }
 
     setAttribute(name, value) {
@@ -119,7 +112,6 @@ export class Component {
         this._range = range;
         this._vdom = this.vdom;
         this._vdom[RENDER_TO_DOM](range);
-        // this.render()[RENDER_TO_DOM](range);
     }
 }
 
@@ -161,13 +153,13 @@ export class ElementWrapper extends Component {
         }
 
         this._root = root;
-        // range.deleteContents();
-        // range.insertNode(root);
         replaceContent(range, root);
     }
 }
 
 function replaceContent(range, node) {
+    // range.deleteContents();
+    // range.insertNode(root);  <==== this will not work, text element will cause error
     range.insertNode(node);
     range.setStartAfter(node);
     range.deleteContents();
