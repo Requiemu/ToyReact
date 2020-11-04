@@ -40,8 +40,8 @@ export class Component {
         }
 
         const update = (oldVDom, newVDom) => {
-            console.log('update, oldvdom, newVdom', oldVDom, newVDom)
             if (!isSameVDom(oldVDom, newVDom)) {
+                console.log('update different node:', oldVDom, newVDom);
                 newVDom[RENDER_TO_DOM](oldVDom._range);
                 return;
             }
@@ -107,7 +107,6 @@ export class Component {
 
     setAttribute(name, value) {
         if (value === 'square') {
-            console.log(this)
         }
         this.props[name] = value;
     }
@@ -231,5 +230,4 @@ export function render(component, parentElement) {
     let rootRange = document.createRange();
     rootRange.selectNodeContents(parentElement);
     component[RENDER_TO_DOM](rootRange);
-    console.log(component);
 }
